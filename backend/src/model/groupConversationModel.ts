@@ -17,7 +17,7 @@ export const createGroupConversation = async (name: string, creatorId: string) =
         include: {
             participants: {
                 include: {
-                    users: {
+                    user: {
                         select: {
                             id: true,
                             name: true,
@@ -71,7 +71,7 @@ export const updateGroupConversation = async (conversationId: string, name: stri
         include: {
             participants: {
                 include: {
-                    users: {
+                    user: {
                         select: {
                             id: true,
                             name: true,

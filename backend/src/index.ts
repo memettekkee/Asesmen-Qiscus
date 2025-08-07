@@ -5,6 +5,7 @@ import http from 'http';
 import { initializeSocket } from './sockets/socket_init';
 
 import userRoute from './routes/userRoutes'
+import chatRoute from './routes/chatRoutes'
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ app.use(express.json());
 app.use(cors({ credentials: true }));
 
 app.use('/', userRoute)
-// app.use('/', chatRoute)
+app.use('/', chatRoute)
 // app.use('/', groupChatRoute)
 
 const server = http.createServer(app);

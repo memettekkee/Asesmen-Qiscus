@@ -24,7 +24,7 @@ export const findExistingPersonalConversation = async (userId1: string, userId2:
         include: {
             participants: {
                 include: {
-                    users: {
+                    user: {
                         select: {
                             id: true,
                             name: true,
@@ -60,7 +60,7 @@ export const createPersonalConversation = async (userId1: string, userId2: strin
         include: {
             participants: {
                 include: {
-                    users: {
+                    user: {
                         select: {
                             id: true,
                             name: true,
@@ -88,7 +88,7 @@ export const getUserConversations = async (userId: string) => {
         include: {
             participants: {
                 include: {
-                    users: {
+                    user: {
                         select: {
                             id: true,
                             name: true,
@@ -104,7 +104,7 @@ export const getUserConversations = async (userId: string) => {
                 },
                 take: 1,
                 include: {
-                    users: {
+                    user: {
                         select: {
                             id: true,
                             name: true,
@@ -142,7 +142,7 @@ export const getConversationById = async (conversationId: string, userId: string
         include: {
             participants: {
                 include: {
-                    users: {
+                    user: {
                         select: {
                             id: true,
                             name: true,
@@ -164,7 +164,7 @@ export const updatedConversation = async (conversationId: string) => {
         include: {
           participants: {
             include: {
-              users: {
+              user: {
                 select: {
                   id: true,
                   name: true,
@@ -178,7 +178,7 @@ export const updatedConversation = async (conversationId: string) => {
             orderBy: { createdAt: 'desc' },
             take: 1,
             include: {
-              users: {
+              user: {
                 select: {
                   id: true,
                   name: true

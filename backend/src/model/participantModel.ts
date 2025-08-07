@@ -21,7 +21,7 @@ export const addParticipantToGroup = async (conversationId: string, userId: stri
             role
         },
         include: {
-            users: {
+            user: {
                 select: {
                     id: true,
                     name: true,
@@ -42,7 +42,7 @@ export const getParticipant = async (userId: string, conversationId: string) => 
             conversationId
         },
         include: {
-            users: {
+            user: {
                 select: {
                     id: true,
                     name: true,
@@ -63,7 +63,7 @@ export const getGroupParticipants = async (conversationId: string) => {
             conversationId
         },
         include: {
-            users: {
+            user: {
                 select: {
                     id: true,
                     name: true,
@@ -89,7 +89,7 @@ export const getParticipantById = async (participantId: string, conversationId: 
             }
         },
         include: {
-            users: {
+            user: {
                 select: {
                     id: true,
                     name: true,
@@ -116,7 +116,7 @@ export const updateParticipantRole = async (participantId: string, conversationI
             role
         },
         include: {
-            users: {
+            user: {
                 select: {
                     id: true,
                     name: true,

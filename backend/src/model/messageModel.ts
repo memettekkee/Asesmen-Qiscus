@@ -11,7 +11,7 @@ export const isUserInConversation = async (userId: string, conversationId: strin
     return participant;
 };
 
-export const createMessage = async (conversationId: string, userId: string, content: string) => {
+export const createMessage = async (conversationId: string, userId: string, content: string, type: any) => {
     await prisma.conversation.update({
         where: {
             id: conversationId
