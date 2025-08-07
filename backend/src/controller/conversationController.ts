@@ -1,4 +1,7 @@
 import express from 'express'
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
 
 import { 
     findExistingPersonalConversation,
@@ -165,3 +168,52 @@ export const getConversationByIdCtrl = async (
         return 
     }
 }
+
+export const uploadFileCtrl = async (
+    req: express.Request,
+    res: express.Response
+) => {
+    try {
+        if (!req.file) {
+            res.status(400).json({
+                error: true,
+                message: "No file uploaded"
+            });
+            return;
+        }
+        
+
+        const file = req.file;
+        const fileExtension = path.extname(file.originalname);
+        const fileName = `${uuidv4()}${fileExtension}`;
+
+        let fileType = 'FILE';
+        if (file.mimetype.startsWith('image/')) fileType = 'IMAGE';
+        else if (file.mimetype.startsWith('video/')) fileType = 'VIDEO';
+        else if (file.mimetype.startsWith('audio/')) fileType = 'AUDIO';
+
+        const uploadsDir = path.join(process.cwd(), 'src', 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        const uploadPath = path.join(uploadsDir, fileName);
+        fs.writeFileSync(uploadPath, file.buffer);
+
+        const fileUrl = `http://localhost:3000/uploads/${fileName}`;
+
+        res.status(200).json({
+            success: true,
+            fileUrl,
+            fileType,
+            fileName: file.originalname,
+            fileSize: file.size
+        });
+
+    } catch (error: any) {
+        res.status(500).json({
+            error: true,
+            message: error.message || "Upload failed"
+        });
+    }
+};

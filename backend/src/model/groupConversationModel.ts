@@ -9,7 +9,7 @@ export const createGroupConversation = async (name: string, creatorId: string) =
                 create: [
                     { 
                         userId: creatorId,
-                        role: 'ADMIN' // yg buat, otomatis jadi admin
+                        role: 0 // yg buat, otomatis jadi admin
                     }
                 ]
             }
@@ -52,7 +52,7 @@ export const isGroupAdmin = async (userId: string, conversationId: string) => {
         where: {
             userId: userId,
             conversationId: conversationId,
-            role: 'ADMIN'
+            role: 0
         }
     });
 

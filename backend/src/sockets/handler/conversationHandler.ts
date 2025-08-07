@@ -1,98 +1,181 @@
 
 import { Server as SocketIOServer } from 'socket.io';
 import { SocketWithUser } from '../../utils/interface';
-import { getUserConversations } from '../../model/conversationModel';
+import { getUserConversations,  } from '../../model/conversationModel';
+import { isUserInConversation } from '../../model/messageModel';
 
-export const conversationHandlers = (io: SocketIOServer, socket: SocketWithUser) => {
-    
-    // Event: Get all user conversations
-    socket.on('get_conversations', async () => {
-        try {
-            const userId = socket.data.user?.id;
+export const initializeRoomsHandler = async (
+    io: SocketIOServer,
+    socket: SocketWithUser, 
+    data?: any
+) => {
+    try {
+        console.log('=== INITIALIZE USER ROOMS HANDLER ===');
+        
+        const userId = socket.data.user?.id;
 
-            if (!userId) {
-                socket.emit('error', { message: 'User not authenticated' });
-                return;
-            }
+        if (!userId) {
+            socket.emit('error', { message: 'User not authenticated' });
+            return;
+        }
 
-            // Ambil semua conversations user
-            const conversations = await getUserConversations(userId);
+        const userConversations = await getUserConversations(userId);
+        
+        const joinedRooms: string[] = [];
+        userConversations.forEach(conversation => {
+            socket.join(conversation.id);
+            joinedRooms.push(conversation.id);
+        });
 
-            // Process conversations (untuk personal chat, ambil nama dari participant lain)
-            const processedConversations = conversations.map(conv => {
-                if (!conv.isGroup) {
-                    const otherParticipant = conv.participants.find(
-                        p => p.userId !== userId
-                    );
-                    
-                    return {
-                        ...conv,
-                        name: otherParticipant?.user.name || "Unknown",
-                        otherUser: otherParticipant?.user || null,
-                        lastMessage: conv.messages[0] || null
-                    };
-                }
+        socket.emit('rooms_initialized', {
+            success: true,
+            joinedRooms,
+            message: `Joined ${joinedRooms.length} conversation rooms`
+        });
+
+        userConversations.forEach(conversation => {
+            socket.to(conversation.id).emit('user_status_changed', {
+                userId,
+                status: 'online',
+                conversationId: conversation.id,
+                timestamp: new Date()
+            });
+        });
+
+        console.log(`User ${userId} initialized and joined ${joinedRooms.length} rooms`);
+
+    } catch (error: any) {
+        console.error('Error initializing user rooms:', error);
+        socket.emit('error', { message: error.message || 'Failed to initialize rooms' });
+    }
+};
+
+export const getConversationsHandler = async (
+    socket: SocketWithUser, 
+    data?: any
+) => {
+    try {
+        console.log('=== GET CONVERSATIONS HANDLER ===');
+        
+        const userId = socket.data.user?.id;
+
+        if (!userId) {
+            socket.emit('error', { message: 'User not authenticated' });
+            return;
+        }
+
+        const conversations = await getUserConversations(userId);
+
+        const processedConversations = conversations.map(conv => {
+            if (!conv.isGroup) {
+                const otherParticipant = conv.participants.find(
+                    p => p.userId !== userId
+                );
                 
                 return {
                     ...conv,
+                    name: otherParticipant?.user.name || "Unknown",
+                    otherUser: otherParticipant?.user || null,
                     lastMessage: conv.messages[0] || null
                 };
-            });
-
-            socket.emit('conversations_received', {
-                success: true,
-                conversations: processedConversations,
-                count: processedConversations.length
-            });
-
-        } catch (error: any) {
-            console.error('Error getting conversations:', error);
-            socket.emit('error', { message: error.message || 'Failed to get conversations' });
-        }
-    });
-
-    // Event: Auto-join user ke semua conversation rooms saat connect
-    socket.on('initialize_user_rooms', async () => {
-        try {
-            const userId = socket.data.user?.id;
-
-            if (!userId) {
-                socket.emit('error', { message: 'User not authenticated' });
-                return;
             }
-
-            // Ambil semua conversations user
-            const userConversations = await getUserConversations(userId);
             
-            // Join ke semua conversation rooms
-            const joinedRooms: string[] = [];
-            userConversations.forEach(conversation => {
-                socket.join(conversation.id);
-                joinedRooms.push(conversation.id);
-            });
+            return {
+                ...conv,
+                lastMessage: conv.messages[0] || null
+            };
+        });
 
-            socket.emit('rooms_initialized', {
-                success: true,
-                joinedRooms,
-                message: `Joined ${joinedRooms.length} conversation rooms`
-            });
+        socket.emit('conversations_received', {
+            success: true,
+            conversations: processedConversations,
+            count: processedConversations.length
+        });
 
-            // Notify other participants bahwa user ini online
-            userConversations.forEach(conversation => {
-                socket.to(conversation.id).emit('user_status_changed', {
-                    userId,
-                    status: 'online',
-                    conversationId: conversation.id,
-                    timestamp: new Date()
-                });
-            });
+        console.log(`Sent ${processedConversations.length} conversations to user ${userId}`);
 
-            console.log(`User ${userId} initialized and joined ${joinedRooms.length} rooms`);
+    } catch (error: any) {
+        console.error('Error getting conversations:', error);
+        socket.emit('error', { message: error.message || 'Failed to get conversations' });
+    }
+};
 
-        } catch (error: any) {
-            console.error('Error initializing user rooms:', error);
-            socket.emit('error', { message: error.message || 'Failed to initialize rooms' });
+export const joinConversationHandler = async (
+    socket: SocketWithUser, 
+    data: any
+) => {
+    try {
+        console.log('=== JOIN CONVERSATION HANDLER ===');
+        
+        const { conversationId } = data;
+        const userId = socket.data.user?.id;
+
+        if (!userId) {
+            socket.emit('error', { message: 'User not authenticated' });
+            return;
         }
-    });
 
+        if (!conversationId) {
+            socket.emit('error', { message: 'Conversation ID is required' });
+            return;
+        }
+
+        const isParticipant = await isUserInConversation(userId, conversationId);
+        if (!isParticipant) {
+            socket.emit('error', { message: "You don't have access to this conversation!" });
+            return;
+        }
+
+        socket.join(conversationId);
+        
+        socket.emit('joined_conversation', { 
+            success: true,
+            conversationId,
+            message: 'Successfully joined conversation'
+        });
+
+        console.log(`User ${userId} joined conversation ${conversationId}`);
+        
+    } catch (error: any) {
+        console.error('Error joining conversation:', error);
+        socket.emit('error', { message: error.message || 'Failed to join conversation' });
+    }
+};
+
+export const leaveConversationHandler = (
+    socket: SocketWithUser, 
+    data: any
+) => {
+    try {
+        console.log('=== LEAVE CONVERSATION HANDLER ===');
+        
+        const { conversationId } = data;
+        const userId = socket.data.user?.id;
+
+        if (!userId || !conversationId) {
+            socket.emit('error', { message: 'User ID and Conversation ID are required' });
+            return;
+        }
+
+        socket.leave(conversationId);
+        
+        socket.emit('left_conversation', {
+            success: true,
+            conversationId,
+            message: 'Successfully left conversation'
+        });
+
+        // Optional: Notify other participants (uncomment if needed)
+        // socket.to(conversationId).emit('user_left_conversation', {
+        //     userId,
+        //     conversationId,
+        //     timestamp: new Date()
+        // });
+
+        console.log(`User ${userId} left conversation ${conversationId}`);
+
+    } catch (error) {
+        console.error('Error leaving conversation:', error);
+        socket.emit('error', { message: 'Failed to leave conversation' });
+    }
 };

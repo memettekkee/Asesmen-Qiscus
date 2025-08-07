@@ -57,10 +57,18 @@ export const createPersonalConversation = async (userId1: string, userId2: strin
                 ]
             }
         },
-        include: {
+        select: {
+            id: true,
+            name: true,
+            image: true,
+            isGroup: true,
             participants: {
-                include: {
-                    user: {
+                select : {
+                    id: true,
+                    userId: true,
+                    role: true,
+                    conversationId: true,
+                    user: {  
                         select: {
                             id: true,
                             name: true,
@@ -68,7 +76,7 @@ export const createPersonalConversation = async (userId1: string, userId2: strin
                             avatar: true
                         }
                     }
-                }
+                },
             }
         }
     });
@@ -85,7 +93,11 @@ export const getUserConversations = async (userId: string) => {
                 }
             }
         },
-        include: {
+        select: {
+            id: true,
+            name: true,
+            image: true,
+            isGroup: true,
             participants: {
                 include: {
                     user: {

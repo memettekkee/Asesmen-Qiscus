@@ -1,7 +1,7 @@
-import { Role } from '@prisma/client';
+// import { Role } from '@prisma/client';
 import prisma from '../database/prisma'
 
-export const addParticipantToGroup = async (conversationId: string, userId: string, role: Role = 'MEMBER') => {
+export const addParticipantToGroup = async (conversationId: string, userId: string, role: number = 2) => {
 
     const existingParticipant = await prisma.participant.findFirst({
         where: {
@@ -104,7 +104,7 @@ export const getParticipantById = async (participantId: string, conversationId: 
     return participant;
 };
 
-export const updateParticipantRole = async (participantId: string, conversationId: string, role: Role) => {
+export const updateParticipantRole = async (participantId: string, conversationId: string, role: number) => {
     const participant = await prisma.participant.update({
         where: {
             userId_conversationId: {
@@ -164,7 +164,7 @@ export const leaveGroup = async (userId: string, conversationId: string) => {
     const admins = await prisma.participant.findMany({
         where: {
             conversationId,
-            role: 'ADMIN'
+            role: 0
         }
     });
 
@@ -183,7 +183,7 @@ export const leaveGroup = async (userId: string, conversationId: string) => {
                     id: participants[0].id
                 },
                 data: {
-                    role: 'ADMIN'
+                    role: 0
                 }
             });
         }
