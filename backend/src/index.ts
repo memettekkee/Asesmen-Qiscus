@@ -15,7 +15,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cors({ credentials: true }));
+app.use(cors({ 
+    credentials: true,
+    origin: [
+        'http://localhost:5173', // Local development
+        'https://asesmen-qiscus-auyw.vercel.app', // Production frontend
+        'https://asesmen-qiscus-auyw.vercel.app/' // Production frontend with trailing slash
+    ]
+}));
 
 app.use('/', userRoute)
 app.use('/', chatRoute)
