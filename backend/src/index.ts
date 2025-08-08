@@ -14,15 +14,28 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-app.use(cors({ 
+// Konfigurasi CORS
+const allowedOrigins = [
+    'https://asesmen-qiscus-auyw.vercel.app', // Production FE
+    'http://localhost:5173' // Development FE
+  ];
+  
+  app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Origin not allowed by CORS'));
+      }
+    },
     credentials: true,
-    origin: [
-        'http://localhost:5173', // Local development
-        'https://asesmen-qiscus-auyw.vercel.app', // Production frontend
-        'https://asesmen-qiscus-auyw.vercel.app/' // Production frontend with trailing slash
-    ]
-}));
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  }));
+  
+  app.options('*', cors());
 
 app.use('/', userRoute)
 app.use('/', chatRoute)
