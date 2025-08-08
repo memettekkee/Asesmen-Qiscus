@@ -200,7 +200,7 @@ export const uploadFileCtrl = async (
         const uploadPath = path.join(uploadsDir, fileName);
         fs.writeFileSync(uploadPath, file.buffer);
 
-        const fileUrl = `http://localhost:3000/uploads/${fileName}`;
+        const fileUrl = `https://qiscus.muhammadmet.biz.id/uploads/${fileName}`;
 
         res.status(200).json({
             success: true,

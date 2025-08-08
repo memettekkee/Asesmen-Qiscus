@@ -40,7 +40,7 @@ export const registerCtrl = async (
     } catch (e: any) {
         res.status(500).json({
             error: true,
-            message: e
+            message: e.message || "Registration failed"
         })
         return
     }
@@ -91,7 +91,7 @@ export const loginCtrl = async (
     } catch (e: any) {
         res.status(500).json({
             error: true,
-            message: e
+            message: e.message || "Login failed"
         })
         return
     }

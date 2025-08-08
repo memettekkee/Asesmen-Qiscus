@@ -137,7 +137,9 @@
           <div v-if="currentChat" class="bg-white/80 backdrop-blur-md p-4">
             <MessageInput 
               @sendMessage="handleSendMessage"
-              @typing="handleTyping" 
+              @sendFile="handleSendFile"
+              @typing="handleTyping"
+              :disabled="isUploadingFile" 
             />
           </div>
         </div>
@@ -178,12 +180,21 @@ const {
   createGroup,
   loadMessages,
   sendMessage,
+  uploadFileAndSend,
   setTypingStatus 
 } = chatData()
 
 const isMobile = ref(window.innerWidth < 768)
 const mobileView = ref('sidebar') 
 const showDetail = ref(false)
+const isUploadingFile = ref(false)
+
+const getFileTypeFromMime = (mimeType: string): 'IMAGE' | 'VIDEO' | 'AUDIO' | 'FILE' => {
+  if (mimeType.startsWith('image/')) return 'IMAGE'
+  if (mimeType.startsWith('video/')) return 'VIDEO'
+  if (mimeType.startsWith('audio/')) return 'AUDIO'
+  return 'FILE'
+}
 
 const handleResize = () => {
   isMobile.value = window.innerWidth < 768
@@ -217,7 +228,6 @@ const handleRoleUpdated = async (conversationId: string) => {
   }
 };
 
-// Show chat detail and update mobile view
 const showChatDetail = () => {
   showDetail.value = true
   if (isMobile.value) {
@@ -225,7 +235,6 @@ const showChatDetail = () => {
   }
 }
 
-// Handle closing the detail view
 const handleDetailClose = () => {
   showDetail.value = false
   if (isMobile.value) {
@@ -233,7 +242,6 @@ const handleDetailClose = () => {
   }
 }
 
-// Update setCurrentChat to load messages and handle mobile view
 const setCurrentChat = async (chat: Conversation) => {
   showDetail.value = false
   currentChat.value = chat
@@ -247,7 +255,6 @@ const setCurrentChat = async (chat: Conversation) => {
   await loadMessages()
 }
 
-// Watch for changes to currentChat.id to reload messages
 watch(() => currentChat.value?.id, (newId, oldId) => {
   if (newId !== oldId) {
     loadMessages()
@@ -262,7 +269,30 @@ const handleStartChat = async (userId: string) => {
   }
 }
 
-// fungsi kirim pesan
+const handleSendFile = async (file: File) => {
+  if (isUploadingFile.value) return 
+  
+  try {
+    isUploadingFile.value = true
+    showDetail.value = false
+    
+    const uploadResult = await uploadFileAndSend(file)
+    
+    if (uploadResult) {
+      const fileType = getFileTypeFromMime(file.type)
+      
+      await sendMessage(uploadResult.fileUrl, fileType)
+      
+      useNotification().success(`${fileType.toLowerCase()} sent successfully!`)
+    }
+  } catch (err) {
+    useNotification().error('Failed to send file')
+    console.error('Send file error:', err)
+  } finally {
+    isUploadingFile.value = false
+  }
+};
+
 const handleSendMessage = async (content: string) => {
   showDetail.value = false
   await sendMessage(content)

@@ -10,7 +10,7 @@ import {
     deleteTheGroup,
     updateGroupInfo,
     updateRole,
-    // uploadFile
+    uploadFile
 } from '../utils/fetchApi';
 import { useLoadingState } from './loadError';
 import type { 
@@ -345,18 +345,18 @@ export function chatData() {
     }
 
     // File Upload Function
-    // const uploadFileAndSend = async (file: File): Promise<{fileUrl: string, fileType: string} | null> => {
-    //     startLoading();
-    //     clearError();
-    //     try {
-    //         const uploadResult = await uploadFile(file);
-    //         stopLoading();
-    //         return uploadResult;
-    //     } catch (err) {
-    //         setError(err instanceof Error ? err.message : 'Failed to upload file');
-    //         return null;
-    //     }
-    // };
+    const uploadFileAndSend = async (file: File): Promise<{fileUrl: string, fileType: string} | null> => {
+        startLoading();
+        clearError();
+        try {
+            const uploadResult = await uploadFile(file);
+            stopLoading();
+            return uploadResult;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to upload file');
+            return null;
+        }
+    };
 
     // Get all user chats using Socket.IO only
     const allUserChats = async(): Promise<ChatResult> => {
@@ -510,14 +510,14 @@ export function chatData() {
         error,
         typingUsers,
         clearError,
-        // REST API functions
+
         startChats,
         createGroup,
         deleteGroup,
         updateUserGroup,
         updateUserRole,
-        // uploadFileAndSend,
-        // Socket.IO functions
+        uploadFileAndSend,
+
         allUserChats,
         loadMessages,
         sendMessage,
