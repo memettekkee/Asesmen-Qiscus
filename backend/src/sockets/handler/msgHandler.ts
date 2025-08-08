@@ -9,8 +9,7 @@ export const sendMsgHandler = async (
     data: any
 ) => {
     try {
-        console.log('=== SEND MESSAGE HANDLER ===');
-        
+
         const { conversationId, content, type = 'TEXT' } = data;
         const userId = socket.data.user?.id;
 
@@ -35,9 +34,7 @@ export const sendMsgHandler = async (
             return;
         }
 
-        console.log('Creating message...');
         const newMessage = await createMessage(conversationId, userId, content, type);
-        console.log('Message created:', newMessage.id);
 
         socket.join(conversationId);
 
@@ -60,7 +57,6 @@ export const sendMsgHandler = async (
             message: 'Message sent successfully'
         });
 
-        console.log(`Message sent by ${userId} in conversation ${conversationId}`);
 
     } catch (error: any) {
         console.error('Error sending message:', error);
@@ -73,7 +69,6 @@ export const getMsgHandler = async (
     data: any
 ) => {
     try {
-        console.log('=== GET MESSAGES HANDLER ===');
         
         const { conversationId } = data;
         const userId = socket.data.user?.id;
@@ -103,8 +98,6 @@ export const getMsgHandler = async (
             count: messages.length
         });
 
-        console.log(`Sent ${messages.length} messages to user ${userId}`);
-
     } catch (error: any) {
         console.error('Error getting messages:', error);
         socket.emit('error', { message: error.message || 'Failed to get messages' });
@@ -116,13 +109,11 @@ export const typingStartHandler = (
     data: any
 ) => {
     try {
-        console.log('=== TYPING START HANDLER ===');
         
         const { conversationId } = data;
         const userId = socket.data.user?.id;
 
         if (!userId || !conversationId) {
-            console.log('Missing userId or conversationId for typing start');
             return;
         }
 
@@ -131,8 +122,6 @@ export const typingStartHandler = (
             conversationId,
             timestamp: new Date()
         });
-
-        console.log(`User ${userId} started typing in conversation ${conversationId}`);
 
     } catch (error) {
         console.error('Error handling typing start:', error);
@@ -144,13 +133,11 @@ export const typingEndHandler = (
     data: any
 ) => {
     try {
-        console.log('=== TYPING END HANDLER ===');
         
         const { conversationId } = data;
         const userId = socket.data.user?.id;
 
         if (!userId || !conversationId) {
-            console.log('Missing userId or conversationId for typing end');
             return;
         }
 
@@ -159,8 +146,6 @@ export const typingEndHandler = (
             conversationId,
             timestamp: new Date()
         });
-
-        console.log(`User ${userId} stopped typing in conversation ${conversationId}`);
 
     } catch (error) {
         console.error('Error handling typing end:', error);

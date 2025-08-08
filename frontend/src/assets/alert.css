@@ -1,0 +1,109 @@
+/* src/assets/sweetalert-custom.css */
+
+/* Override style SweetAlert2 agar lebih compact */
+
+/* Toast style yang lebih mirip Vue-toastification */
+.swal2-popup.swal2-toast {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+  }
+  
+  .swal2-popup.swal2-toast .swal2-title {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .swal2-popup.swal2-toast .swal2-icon {
+    margin: 0 0.5rem 0 0;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .swal2-popup.swal2-toast .swal2-icon .swal2-icon-content {
+    font-size: 1rem;
+  }
+  
+  .swal2-popup.swal2-toast .swal2-success-ring {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  /* Toast warna yang lebih sesuai Vue-toastification */
+  .swal2-popup.swal2-toast.swal2-icon-success {
+    background-color: #ecfdf5;
+    border-left: 4px solid #10b981;
+  }
+  
+  .swal2-popup.swal2-toast.swal2-icon-error {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+  }
+  
+  .swal2-popup.swal2-toast.swal2-icon-warning {
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+  }
+  
+  .swal2-popup.swal2-toast.swal2-icon-info {
+    background-color: #eff6ff;
+    border-left: 4px solid #a9a9a9;
+  }
+  
+  /* Confirmation dialog yang lebih compact */
+  .compact-swal {
+    padding: 1rem;
+    width: auto;
+    max-width: 400px;
+    font-size: 0.875rem;
+  }
+  
+  .compact-swal-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+    padding: 0 !important;
+  }
+  
+  .compact-swal-content {
+    margin-top: 0 !important;
+    font-size: 0.875rem !important;
+    padding: 0 !important;
+  }
+  
+  .compact-swal-actions {
+    margin-top: 1.25rem !important;
+  }
+  
+  /* Ukuran ikon yang lebih kecil */
+  .compact-swal .swal2-icon {
+    margin: 0.75rem auto !important;
+    width: 3rem !important;
+    height: 3rem !important;
+  }
+  
+  .compact-swal .swal2-icon .swal2-icon-content {
+    font-size: 1.5rem !important;
+  }
+  
+  /* Tombol yang lebih kecil */
+  .compact-swal .swal2-confirm,
+  .compact-swal .swal2-cancel {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Warna-warna untuk tombol konfirmasi */
+  .swal2-styled.swal2-confirm {
+    background-color: #10b981;
+  }
+  
+  .swal2-styled.swal2-confirm:focus {
+    box-shadow: 0 0 0 3px rgb(255, 255, 255);
+  }
+  
+  .swal2-styled.swal2-cancel {
+    background-color: #ef4444;
+  }

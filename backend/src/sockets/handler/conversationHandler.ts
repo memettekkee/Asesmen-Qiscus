@@ -10,7 +10,6 @@ export const initializeRoomsHandler = async (
     data?: any
 ) => {
     try {
-        console.log('=== INITIALIZE USER ROOMS HANDLER ===');
         
         const userId = socket.data.user?.id;
 
@@ -42,8 +41,6 @@ export const initializeRoomsHandler = async (
             });
         });
 
-        console.log(`User ${userId} initialized and joined ${joinedRooms.length} rooms`);
-
     } catch (error: any) {
         console.error('Error initializing user rooms:', error);
         socket.emit('error', { message: error.message || 'Failed to initialize rooms' });
@@ -55,7 +52,6 @@ export const getConversationsHandler = async (
     data?: any
 ) => {
     try {
-        console.log('=== GET CONVERSATIONS HANDLER ===');
         
         const userId = socket.data.user?.id;
 
@@ -92,7 +88,6 @@ export const getConversationsHandler = async (
             count: processedConversations.length
         });
 
-        console.log(`Sent ${processedConversations.length} conversations to user ${userId}`);
 
     } catch (error: any) {
         console.error('Error getting conversations:', error);
@@ -105,7 +100,6 @@ export const joinConversationHandler = async (
     data: any
 ) => {
     try {
-        console.log('=== JOIN CONVERSATION HANDLER ===');
         
         const { conversationId } = data;
         const userId = socket.data.user?.id;
@@ -133,8 +127,6 @@ export const joinConversationHandler = async (
             conversationId,
             message: 'Successfully joined conversation'
         });
-
-        console.log(`User ${userId} joined conversation ${conversationId}`);
         
     } catch (error: any) {
         console.error('Error joining conversation:', error);
@@ -147,7 +139,6 @@ export const leaveConversationHandler = (
     data: any
 ) => {
     try {
-        console.log('=== LEAVE CONVERSATION HANDLER ===');
         
         const { conversationId } = data;
         const userId = socket.data.user?.id;
@@ -164,15 +155,6 @@ export const leaveConversationHandler = (
             conversationId,
             message: 'Successfully left conversation'
         });
-
-        // Optional: Notify other participants (uncomment if needed)
-        // socket.to(conversationId).emit('user_left_conversation', {
-        //     userId,
-        //     conversationId,
-        //     timestamp: new Date()
-        // });
-
-        console.log(`User ${userId} left conversation ${conversationId}`);
 
     } catch (error) {
         console.error('Error leaving conversation:', error);

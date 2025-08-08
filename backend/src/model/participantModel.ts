@@ -1,4 +1,3 @@
-// import { Role } from '@prisma/client';
 import prisma from '../database/prisma'
 
 export const addParticipantToGroup = async (conversationId: string, userId: string, role: number = 2) => {

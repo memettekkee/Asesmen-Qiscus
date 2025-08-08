@@ -24,7 +24,6 @@ export const getParticipantsHandler = async (
     data: any
 ) => {
     try {
-        console.log('=== GET PARTICIPANTS HANDLER ===');
         
         const { conversationId } = data;
         const userId = socket.data.user?.id;
@@ -60,8 +59,6 @@ export const getParticipantsHandler = async (
             count: participants.length
         });
 
-        console.log(`Sent ${participants.length} participants to user ${userId} for group ${conversationId}`);
-
     } catch (error: any) {
         console.error('Error getting participants:', error);
         socket.emit('error', { message: error.message || 'Failed to get participants' });
@@ -74,8 +71,7 @@ export const addParticipantHandler = async (
     data: any
 ) => {
     try {
-        console.log('=== ADD PARTICIPANT HANDLER ===');
-        
+
         const { conversationId, userId } = data;
         const currentUserId = socket.data.user?.id;
 
@@ -139,8 +135,6 @@ export const addParticipantHandler = async (
 
         await notifyParticipantsChange(io, conversationId);
 
-        console.log(`User ${userId} added to group ${conversationId} by ${currentUserId}`);
-
     } catch (error: any) {
         let errorMessage = error.message || 'Failed to add participant';
         let statusCode = 500;
@@ -164,7 +158,6 @@ export const removeParticipantHandler = async (
     data: any
 ) => {
     try {
-        console.log('=== REMOVE PARTICIPANT HANDLER ===');
         
         const { conversationId, participantId } = data;
         const userId = socket.data.user?.id;
@@ -248,8 +241,6 @@ export const removeParticipantHandler = async (
 
         await notifyParticipantsChange(io, conversationId);
 
-        console.log(`User ${participantId} removed from group ${conversationId} by ${userId}`);
-
     } catch (error: any) {
         console.error('Error removing participant:', error);
         socket.emit('error', { message: error.message || 'Failed to remove participant' });
@@ -262,7 +253,6 @@ export const leaveGroupHandler = async (
     data: any
 ) => {
     try {
-        console.log('=== LEAVE GROUP HANDLER ===');
         
         const { conversationId } = data;
         const userId = socket.data.user?.id;
@@ -303,7 +293,6 @@ export const leaveGroupHandler = async (
                     
                     socket.leave(conversationId);
                     
-                    console.log(`User ${userId} left empty group ${conversationId}`);
                     return;
                 }
                 
@@ -335,8 +324,6 @@ export const leaveGroupHandler = async (
         socket.leave(conversationId);
         
         await notifyParticipantsChange(io, conversationId);
-
-        console.log(`User ${userId} left group ${conversationId}`);
 
     } catch (error: any) {
         let errorMessage = error.message || 'Failed to leave group';

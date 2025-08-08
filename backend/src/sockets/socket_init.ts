@@ -15,7 +15,6 @@ export const initializeSocket = (httpServer: HttpServer) => {
   io.use(authenticateSocket);
 
   io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
     socketHandlers(io, socket); 
   });
 

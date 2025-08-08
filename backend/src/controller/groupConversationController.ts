@@ -146,7 +146,9 @@ export const updateParticipantRoleCtrl = async (
         const { role } = req.body;
         const userId = req.user?.id;
 
-        if (!role || (role !== 0 && role !== 2)) {
+        console.log("role",role)
+
+        if (role === undefined || role === null || (role !== 0 && role !== 2)) {
             res.status(400).json({
                 error: true,
                 message: "Role must be ADMIN or MEMBER !"
