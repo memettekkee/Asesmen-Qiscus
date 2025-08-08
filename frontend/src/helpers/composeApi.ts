@@ -43,7 +43,7 @@ import {
     removeParticipantIo,
     addParticipantIo,
     joinConversationIo,
-    initializeUserRoomsIo
+    // initializeUserRoomsIo
 } from '../utils/socketApi';
 
 const { 
